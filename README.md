@@ -10,6 +10,8 @@ https://www.bensound.com - credit for background music
 
 https://levelup.gitconnected.com/creating-a-simple-2d-game-with-html5-javascript-889aa06035ef - used tutorial for starter code
 
+https://mr-easy.github.io/2017-06-26-creating-spritesheet-animation-in-html5-canvas-using-javascript/ - used for help with animation
+
 side scroller game - maybe platforms
 there will be a timer to track how long the player lasts
 will track record times, somwhere on a local storage
