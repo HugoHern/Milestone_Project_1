@@ -26,3 +26,5 @@ Making a game where it's the end of the world.
 The dino has to try to survive the first asteroid collisions
 
 then maybe aliens?
+
+number of meteors need to increase as time goes on.
