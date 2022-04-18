@@ -6,7 +6,7 @@ context.canvas.width = 1220
 
 let gravity = 1.5  // global gravity variable for all game objects
 
-//adding sound
+//function to add background music 
 function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -23,7 +23,9 @@ function sound(src) {
 }
 
 //uploading background for the game
-let dinoBackGround = new gameBackground(1220, 400, "/assets/parallax-demon-woods-far-trees.png", 0, 0, "image")
+let backgroundImage = new Image()
+backgroundImage.src = "/assets/battleback7.png"
+let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1220, 400, 0, 0)
 console.log("background loaded")
 //uploading art assets for the main character
 let dinoSpriteSheet = new Image()
@@ -41,18 +43,18 @@ let dino = new gameSprite(dinoSpriteSheet,
 
 //uploading art assets for  meteor objects
 let meteorSpriteSheet = new Image()
-meteorSpriteSheet.src = "/assets/meteor_spritesheet_2.png"
+meteorSpriteSheet.src = "/assets/meteors_3.png"
 //array to keep track of meteors
 let meteorArray = []     
 let numberofMeteors = 5
 for ( i = 0; i < numberofMeteors; i++){
-    meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 725, 68, 90, 8)
+    meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 800, 52, 1, 8)
     meteor.id = "meteor" + i // assigning a specific id to each meteor object
     meteor.x = Math.random() * 1220 // assign a random X position inside the game's width
     meteorArray.push(meteor)  //adding current meteor object to the meteor array
 }
 
-//function to create our games background with an uploaded image
+//function to create our games background with an uploaded image --- this function is never used
 function gameBackground(width, height, color, x, y, type){
     this.type = type
     if (type == "image"){
@@ -121,19 +123,6 @@ function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, hei
 
 
 }
-//declaring object which will represent the dino/character
-/*const dino = {
-    gameObject: dino,
-    height: 32,
-    width: 32,
-    jumping: true,
-    //the position of the dino
-    x: 0,
-    y: 0,
-    //the speed of the dino
-    xVelocity: 0,
-    yVelocity: 0
-}*/
 
 //declaring object to control the dino/character
 const controller ={
@@ -222,7 +211,7 @@ const gameLoop = function(){
     }
 
      // Creates the background and dino using our canvas object and functions
-    dinoBackGround.draw()
+    //dinoBackGround.draw() //calling the background function
     console.log('backgorund rendered')
     /*else {context.fillStyle = "#cdc1d4" //"#201A23"
     context.fillRect(0, 0, 1220, 400); // x, y, width, height
@@ -246,20 +235,23 @@ const gameLoop = function(){
     context.stroke()
 
     //drawing the main character / game objects
+    backgroundScreen.update()
+   
     dino.update()
-    meteor.update()
-    //context.clearRect(0, 0, 1220, 400)
+    context.clearRect(0, 0, 1220, 400)  //clear the canvas of any obhects before going through the draw functions
+    backgroundScreen.draw(context)
     dino.draw(context)
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length > 1){
+            meteorArray[i].update()
             meteorArray[i].draw(context)
         }
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity then the object has hit the ground and will be removed from game
         }
         if (meteorArray.length <= 1){
-            meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 725, 110, 90, 8))
+            meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 800, 52, 1, 8))
             console.log("new meteor added")
         }
         
