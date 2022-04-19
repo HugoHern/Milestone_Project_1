@@ -149,28 +149,15 @@ const controller ={
 }
 
 // function to detect collision between two objects
-function detectCollision(object1, object2){
-    let player = object1
-    let object = object2
-
-    let playerXRight = player.x + player.width
-    let playerYBottom = player.y
-    //console.log(playerXRight, playerYBottom)
-
-    let objectXRight = object.x + object.width
-    let objectYBottom = object.y + object.height
-    //console.log(objectXRight, objectYBottom)
-
-    const overlapX = (player.x == objectXRight && player.x == object.x) || 
-                     (playerXRight == objectXRight && playerXRight == object.x)
-    const overlapY = (player.y <= objectYBottom && player.y >= object.y) ||
-                     (playerYBottom <= objectYBottom && playerYBottom >= object.y)
-
-    let collision = overlapY
-    if (collision){
-        console.log("The player and the object collided")
+function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    // Check x and y for overlap
+    if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2){
+        return false;
     }
+    return true;
 }
+
+
 //main game loop to detect  key events and move dino position
 const gameLoop = function(){
     //if player is pressing up and is  not currently jumping, allow jump
@@ -230,39 +217,54 @@ const gameLoop = function(){
     }
 
        // Creates and fills the cube for each frame
-    context.fillStyle = "#4d8ef0"; // hex for cube color
+    /*context.fillStyle = "#4d8ef0"; // hex for cube color
     context.beginPath();
     context.rect(dino.x, dino.y, 25, 25)
-    context.fill()
+    context.fill()*/
     //creates a square for the meteor
-    context.fillStyle = "#4d8ef0"; // hex for cube color
+    /*context.fillStyle = "#4d8ef0"; // hex for cube color
     context.beginPath();
     context.rect(meteor.x, meteor.y, 25, 25)
-    context.fill()
+    context.fill()*/
      // Creates the "ground"  or line for each frame
-    context.strokeStyle = "#2E2532"
+    /*context.strokeStyle = "#2E2532"
     context.lineWidth = 30
     context.beginPath()
     context.moveTo(0, 385)
     context.lineTo(1220, 385)
-    context.stroke()
+    context.stroke()*/
 
     //drawing the main character / game objects
     backgroundScreen.update()
     dino.update()  //updating positin of the player
+    //checking for collision
+    for (let i = 0; i < meteorArray.length; i++){
+        if(checkCollision(dino.x, dino.y, dino.width, dino.height, meteorArray[i].x, meteorArray[i].y, meteorArray[i].width, meteorArray[i].height)){
+            console.log('the two objects collided')
+            console.log(dino.x, meteorArray[i].y)
+        }  
+    }
     context.clearRect(0, 0, 1220, 400)  //clear the canvas of any objects before going through the draw functions
     backgroundScreen.draw(context) //drawing the background
-    dino.draw(context)  //drawing the player
-
+    
+    
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length > 1){
+            
             meteorArray[i].update()
-            meteorArray[i].draw(context)
-
             //code to check the collision between the meteors and the player
-            detectCollision(dino, meteorArray[i])
+            /*if(checkCollision(dino.x, dino.y, dino.width, dino.height, meteorArray[i].x, meteorArray[i].y, meteorArray[i].width, meteorArray[i].height)){
+                console.log('the two objects collided')
+                console.log(dino.x, meteorArray[i].y)
+            }  */
+            //else(console.log('no collision'))
+            //console.log(dino.x, meteorArray[i].y)
+          
         }
+            meteorArray[i].draw(context)
+        
+            
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity then the object has hit the ground and will be removed from game
         }
@@ -272,6 +274,7 @@ const gameLoop = function(){
         }
         
     }
+    dino.draw(context)  //drawing the player
    
     // call update when the browser is ready to draw again, creates an infinite loop
     window.requestAnimationFrame(gameLoop)
@@ -285,3 +288,10 @@ let sadSong = new sound('/assets/bensound-sadday.mp3')
 window.addEventListener("keydown", controller.keyListener)
 window.addEventListener("keyup", controller.keyListener)
 window.requestAnimationFrame(gameLoop)
+
+/*if(checkCollision(dino.x, dino.y, meteorArray[i].x, meteorArray[i].y)){
+    console.log('the two objects collided')
+    console.log(dino.x, meteorArray[i].x)
+}  
+else(console.log('no collision'))
+console.log(dino.x, meteorArray[i].x)*/

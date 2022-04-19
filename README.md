@@ -33,3 +33,5 @@ The dino has to try to survive the first asteroid collisions
 then maybe aliens?
 
 number of meteors need to increase as time goes on.
+
+NEED TO REFACTOR THE DRAW CODE SO I CAN DO THE COLLISION CODE AFTER THE UPDATE BUT BEFORE CLEARING THE CANVAS
