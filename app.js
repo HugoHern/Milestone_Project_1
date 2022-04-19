@@ -148,10 +148,32 @@ const controller ={
     }
 }
 
+// function to detect collision between two objects
+function detectCollision(object1, object2){
+    let player = object1
+    let object = object2
 
+    let playerXRight = player.x + player.width
+    let playerYBottom = player.y
+    //console.log(playerXRight, playerYBottom)
+
+    let objectXRight = object.x + object.width
+    let objectYBottom = object.y + object.height
+    //console.log(objectXRight, objectYBottom)
+
+    const overlapX = (player.x == objectXRight && player.x == object.x) || 
+                     (playerXRight == objectXRight && playerXRight == object.x)
+    const overlapY = (player.y <= objectYBottom && player.y >= object.y) ||
+                     (playerYBottom <= objectYBottom && playerYBottom >= object.y)
+
+    let collision = overlapY
+    if (collision){
+        console.log("The player and the object collided")
+    }
+}
 //main game loop to detect  key events and move dino position
 const gameLoop = function(){
-    //if plaer is pressing up and is  not currently jumping, allow jump
+    //if player is pressing up and is  not currently jumping, allow jump
     if (controller.up && dino.jumping == false){
         dino.yVelocity -=20
         dino.jumping = true
@@ -198,9 +220,6 @@ const gameLoop = function(){
         meteorArray[i].yVelocity = 0
     }
 }
-        
-
-
     //if dino object goes past the left side of the screen, reset character to right side
     //if dino object goes past the right side of the screen, reset character to left side
     if (dino.x < -20) {
@@ -210,12 +229,6 @@ const gameLoop = function(){
         dino.x = -20
     }
 
-     // Creates the background and dino using our canvas object and functions
-    //dinoBackGround.draw() //calling the background function
-    console.log('backgorund rendered')
-    /*else {context.fillStyle = "#cdc1d4" //"#201A23"
-    context.fillRect(0, 0, 1220, 400); // x, y, width, height
-    }*/
        // Creates and fills the cube for each frame
     context.fillStyle = "#4d8ef0"; // hex for cube color
     context.beginPath();
@@ -236,16 +249,19 @@ const gameLoop = function(){
 
     //drawing the main character / game objects
     backgroundScreen.update()
-   
-    dino.update()
-    context.clearRect(0, 0, 1220, 400)  //clear the canvas of any obhects before going through the draw functions
-    backgroundScreen.draw(context)
-    dino.draw(context)
+    dino.update()  //updating positin of the player
+    context.clearRect(0, 0, 1220, 400)  //clear the canvas of any objects before going through the draw functions
+    backgroundScreen.draw(context) //drawing the background
+    dino.draw(context)  //drawing the player
+
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length > 1){
             meteorArray[i].update()
             meteorArray[i].draw(context)
+
+            //code to check the collision between the meteors and the player
+            detectCollision(dino, meteorArray[i])
         }
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity then the object has hit the ground and will be removed from game
