@@ -237,12 +237,16 @@ const gameLoop = function(){
     //drawing the main character / game objects
     backgroundScreen.update()
     dino.update()  //updating positin of the player
-    //checking for collision
+    //checking for collision in meteor array
     for (let i = 0; i < meteorArray.length; i++){
         if(checkCollision(dino.x, dino.y, dino.width, dino.height, meteorArray[i].x, meteorArray[i].y, meteorArray[i].width, meteorArray[i].height)){
             console.log('the two objects collided')
             console.log(dino.x, meteorArray[i].y)
         }  
+    }
+    //updating meteor array
+    for (let i = 0; i < meteorArray.length; i++){
+        meteorArray[i].update()
     }
     context.clearRect(0, 0, 1220, 400)  //clear the canvas of any objects before going through the draw functions
     backgroundScreen.draw(context) //drawing the background
@@ -251,23 +255,14 @@ const gameLoop = function(){
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length > 1){
-            
-            meteorArray[i].update()
-            //code to check the collision between the meteors and the player
-            /*if(checkCollision(dino.x, dino.y, dino.width, dino.height, meteorArray[i].x, meteorArray[i].y, meteorArray[i].width, meteorArray[i].height)){
-                console.log('the two objects collided')
-                console.log(dino.x, meteorArray[i].y)
-            }  */
-            //else(console.log('no collision'))
-            //console.log(dino.x, meteorArray[i].y)
-          
-        }
             meteorArray[i].draw(context)
-        
+            }
             
+
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity then the object has hit the ground and will be removed from game
         }
+
         if (meteorArray.length <= 1){
             meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 800, 52, 1, 8))
             console.log("new meteor added")
