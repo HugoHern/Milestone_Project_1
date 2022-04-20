@@ -149,12 +149,25 @@ const controller ={
 }
 
 // function to detect collision between two objects
-function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+function checkCollision(sprite1, sprite2) {
     // Check x and y for overlap
-    if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2){
-        return false;
-    }
+    let spr1 = sprite1
+    let spr2 = sprite2
+
+    const spr1XRight = spr1.x + spr1.width;
+    const spr2XRight = spr2.x + spr2.width;
+    const spr1YBottom = spr1.y + spr1.height;
+    const spr2YBottom = spr2.y + spr2.height;
+
+    const overlapX = (spr1.x <= spr2XRight && spr1.x >= spr2.x) || 
+    (spr1XRight <= spr2XRight && spr1XRight >= spr2.x);
+    const overlapY = (spr1.y <= spr2YBottom && spr1.y >= spr2.y) || 
+     (spr1YBottom <= spr2YBottom && spr1YBottom >= spr2.y);
+
+     const isColliding = overlapX && overlapY;
+    if (isColliding) {
     return true;
+    }
 }
 
 
@@ -237,20 +250,22 @@ const gameLoop = function(){
     //drawing the main character / game objects
     backgroundScreen.update()
     dino.update()  //updating positin of the player
-    //checking for collision in meteor array
-    for (let i = 0; i < meteorArray.length; i++){
-        if(checkCollision(dino.x, dino.y, dino.width, dino.height, meteorArray[i].x, meteorArray[i].y, meteorArray[i].width, meteorArray[i].height)){
-            console.log('the two objects collided')
-            console.log(dino.x, meteorArray[i].y)
-        }  
-    }
     //updating meteor array
     for (let i = 0; i < meteorArray.length; i++){
         meteorArray[i].update()
     }
+    //checking for collision in meteor array
+    for (let i = 0; i < meteorArray.length; i++){
+        if(checkCollision(meteorArray[i], dino)){
+            console.log('the two objects collided')
+            console.log(dino.y, meteorArray[i].y)
+            console.log(dino.width, meteorArray[i].width)
+        }  
+    }
+    
     context.clearRect(0, 0, 1220, 400)  //clear the canvas of any objects before going through the draw functions
     backgroundScreen.draw(context) //drawing the background
-    
+    dino.draw(context)  //drawing the player
     
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
@@ -260,7 +275,7 @@ const gameLoop = function(){
             
 
         if(meteorArray[i].yVelocity === 0){
-            meteorArray.splice([i], 1) // if the meteor's yVelocity then the object has hit the ground and will be removed from game
+            meteorArray.splice([i], 1) // if the meteor's yVelocity is 0 then the object has hit the ground and will be removed from game
         }
 
         if (meteorArray.length <= 1){
@@ -269,7 +284,7 @@ const gameLoop = function(){
         }
         
     }
-    dino.draw(context)  //drawing the player
+    
    
     // call update when the browser is ready to draw again, creates an infinite loop
     window.requestAnimationFrame(gameLoop)
