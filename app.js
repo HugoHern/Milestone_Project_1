@@ -5,6 +5,7 @@ context.canvas.height = 400
 context.canvas.width = 1220
 
 let gravity = 1.5  // global gravity variable for all game objects
+let score = 0 // variable to keep track of score
 
 //function to add background music 
 function sound(src) {
@@ -25,7 +26,7 @@ function sound(src) {
 //uploading background for the game
 let backgroundImage = new Image()
 backgroundImage.src = "/assets/battleback7.png"
-let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1220, 400, 0, 0)
+let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1220, 400, 1220, 0, 0)
 console.log("background loaded")
 //uploading art assets for the main character
 let dinoSpriteSheet = new Image()
@@ -36,8 +37,9 @@ let dino = new gameSprite(dinoSpriteSheet,
                             true,  //boolean for jumping
                             0,   //xvelocity
                             0,   //yvelocity
-                            580, //width 
-                            25,  //height   
+                            25, //width 
+                            25,  //height
+                            580, //spritesheetwidth   
                             17.0, // time(ms) duration between each frame change
                             24) // number of sprites in the spritesheet
 
@@ -48,7 +50,7 @@ meteorSpriteSheet.src = "/assets/meteors_3.png"
 let meteorArray = []     
 let numberofMeteors = 5
 for ( i = 0; i < numberofMeteors; i++){
-    meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 800, 52, 1, 8)
+    meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8)
     meteor.id = "meteor" + i // assigning a specific id to each meteor object
     meteor.x = Math.random() * 1220 // assign a random X position inside the game's width
     meteorArray.push(meteor)  //adding current meteor object to the meteor array
@@ -81,7 +83,7 @@ function gameBackground(width, height, color, x, y, type){
 }
 
 //function to create our image for the character and animation using different frames in the spritesheet
-function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, height, timePerFrame, numberOfFrames){
+function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, height, spriteSheetWidth, timePerFrame, numberOfFrames){
     this.spritesheet = spritesheet
     this.x = x
     this.y = y
@@ -90,6 +92,7 @@ function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, hei
     this.yVelocity = yVelocity
     this.width = width
     this.height = height
+    this.spriteSheetWidth = spriteSheetWidth
     this.timePerFrame = timePerFrame
     this.numberOfFrames = numberOfFrames || 1 //defaults to 1
 
@@ -110,14 +113,16 @@ function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, hei
     }
     //using the drawImage function of canvas to draw to the DOM and pass the context of canvas as a parameter
     this.draw = function(context){
+        context.strokeStyle = 'white'
+        context.strokeRect(this.x, this.y, this.width, this.height)
         context.drawImage(this.spritesheet, 
-                          this.frameIndex*this.width/this.numberOfFrames,
+                          this.frameIndex*this.spriteSheetWidth/this.numberOfFrames,
                           0,
-                          this.width/this.numberOfFrames,
+                          this.spriteSheetWidth/this.numberOfFrames,
                           this.height,
                           this.x,
                           this.y,
-                          this.width/this.numberOfFrames,
+                          this.spriteSheetWidth/this.numberOfFrames,
                           this.height)
     }
 
@@ -154,21 +159,14 @@ function checkCollision(sprite1, sprite2) {
     let spr1 = sprite1
     let spr2 = sprite2
 
-    const spr1XRight = spr1.x + spr1.width;
-    const spr2XRight = spr2.x + spr2.width;
-    const spr1YBottom = spr1.y + spr1.height;
-    const spr2YBottom = spr2.y + spr2.height;
+    if (spr1.x < spr2.x + spr2.width  && spr1.x + spr1.width  > spr2.x &&
+		spr1.y < spr2.y + spr2.height && spr1.y + spr1.height > spr2.y) {
 
-    const overlapX = (spr1.x <= spr2XRight && spr1.x >= spr2.x) || 
-    (spr1XRight <= spr2XRight && spr1XRight >= spr2.x);
-    const overlapY = (spr1.y <= spr2YBottom && spr1.y >= spr2.y) || 
-     (spr1YBottom <= spr2YBottom && spr1YBottom >= spr2.y);
+            return true
+        }
 
-     const isColliding = overlapX && overlapY;
-    if (isColliding) {
-    return true;
-    }
 }
+
 
 
 //main game loop to detect  key events and move dino position
@@ -260,6 +258,7 @@ const gameLoop = function(){
             console.log('the two objects collided')
             console.log(dino.y, meteorArray[i].y)
             console.log(dino.width, meteorArray[i].width)
+            alert('game over')
         }  
     }
     
@@ -279,7 +278,7 @@ const gameLoop = function(){
         }
 
         if (meteorArray.length <= 1){
-            meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 800, 52, 1, 8))
+            meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8))
             console.log("new meteor added")
         }
         
