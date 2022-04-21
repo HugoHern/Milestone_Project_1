@@ -2,10 +2,13 @@
 const context = document.querySelector('canvas').getContext('2d')
 //Setting a set width and height for the canvas
 context.canvas.height = 400
-context.canvas.width = 1220
+//context.canvas.width = 1220
+context.canvas.width = 1104
 
 let gravity = 1.5  // global gravity variable for all game objects
 let score = 0 // variable to keep track of score
+let scoreText = document.getElementById('score') //accessing the DOM to display score
+scoreText.textContent = "Score:     "
 
 //function to add background music 
 function sound(src) {
@@ -26,21 +29,21 @@ function sound(src) {
 //uploading background for the game
 let backgroundImage = new Image()
 backgroundImage.src = "/assets/battleback7.png"
-let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1220, 400, 1220, 0, 0)
+let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1104, 400, 1220, 0, 0)
 console.log("background loaded")
 //uploading art assets for the main character
 let dinoSpriteSheet = new Image()
 dinoSpriteSheet.src = "/assets/blue-dino.png"
 let dino = new gameSprite(dinoSpriteSheet, 
-                            0,   //x position
-                            0,   //y position
+                            10,   //x position
+                            338,   //y position
                             true,  //boolean for jumping
                             0,   //xvelocity
                             0,   //yvelocity
                             25, //width 
                             25,  //height
                             580, //spritesheetwidth   
-                            17.0, // time(ms) duration between each frame change
+                            0, // time(ms) duration between each frame change -17.0
                             24) // number of sprites in the spritesheet
 
 //uploading art assets for  meteor objects
@@ -96,7 +99,7 @@ function gameSprite(spritesheet, x, y, jumping, xVelocity, yVelocity, width, hei
     this.timePerFrame = timePerFrame
     this.numberOfFrames = numberOfFrames || 1 //defaults to 1
 
-    //current position in the sprite hseet
+    //current position in the sprite Sheet
     this.frameIndex = 0
     //time that passed since the last time the sprite was updated using the built in Date object
     this.lastUpdate = Date.now()
@@ -155,7 +158,7 @@ const controller ={
 
 // function to detect collision between two objects
 function checkCollision(sprite1, sprite2) {
-    // Check x and y for overlap
+
     let spr1 = sprite1
     let spr2 = sprite2
 
@@ -221,9 +224,9 @@ const gameLoop = function(){
     //if dino object goes past the left side of the screen, reset character to right side
     //if dino object goes past the right side of the screen, reset character to left side
     if (dino.x < -20) {
-        dino.x = 1220
+        dino.x = 1104
     } 
-    else if (dino.x > 1220) {
+    else if (dino.x > 1104) {
         dino.x = -20
     }
 
@@ -256,13 +259,13 @@ const gameLoop = function(){
     for (let i = 0; i < meteorArray.length; i++){
         if(checkCollision(meteorArray[i], dino)){
             console.log('the two objects collided')
-            console.log(dino.y, meteorArray[i].y)
+            console.log(dino.x, dino.y)
             console.log(dino.width, meteorArray[i].width)
-            alert('game over')
+            //alert('game over')
         }  
     }
     
-    context.clearRect(0, 0, 1220, 400)  //clear the canvas of any objects before going through the draw functions
+    context.clearRect(0, 0, 1104, 400)  //clear the canvas of any objects before going through the draw functions
     backgroundScreen.draw(context) //drawing the background
     dino.draw(context)  //drawing the player
     
@@ -275,14 +278,33 @@ const gameLoop = function(){
 
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity is 0 then the object has hit the ground and will be removed from game
+            score++
+            
+            scoreText.textContent = `Score: ${score}`
+            console.log('score is ', score)
         }
 
-        if (meteorArray.length <= 1){
+        /*if (meteorArray.length <= 1){
             meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8))
-            console.log("new meteor added")
-        }
+            numberofMeteors++  //add or multiple to the number of meteors
+            console.log('number of meteors = ', numberofMeteors)
+        }*/
         
     }
+
+    for ( let i = 0; i < meteorArray.length; i++){
+        if (meteorArray.length <= 1){
+            for ( i = 0; i < numberofMeteors; i++){
+                meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8)
+                meteor.id = "meteor" + i // assigning a specific id to each meteor object
+                meteor.x = Math.random() * 1220 // assign a random X position inside the game's width
+                meteorArray.push(meteor)  //adding current meteor object to the meteor array
+                //numberofMeteors++ //add on to the meteor arraay
+            }
+        numberofMeteors++    
+        console.log('number of meteors = ', numberofMeteors)
+    }
+}
     
    
     // call update when the browser is ready to draw again, creates an infinite loop

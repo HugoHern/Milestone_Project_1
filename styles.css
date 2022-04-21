@@ -14,11 +14,48 @@
   }
   
   body {
-  
-    align-content:space-around;
-    background-color:#545f5f;
+    display: flex;
+    align-content: center;
+    /*background-color:#545f5f;*/
     color:#FBF5F3;
-    display:grid;
+    background: linear-gradient(-45deg, #8A3B4B, #C17D59, #7A3747, #ee9961);
+	  background-size: 400% 400%;
+	  animation: gradient 10s ease infinite;
+	  height: 100vh;
     justify-content:center;
+    align-items: center;
+    align-self: center;
   
+  
+  }
+
+  canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .title{
+    text-align: center;
+    font-size: 50px;
+    display: inline;
+  }
+  .score{
+    text-align: right;
+    font-size: 30px;
+    display: inline;
+    padding-left: 20em;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
