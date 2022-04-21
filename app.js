@@ -9,7 +9,9 @@ let gravity = 1.5  // global gravity variable for all game objects
 let score = 0 // variable to keep track of score
 let scoreText = document.getElementById('score') //accessing the DOM to display score
 scoreText.textContent = "Score:     "
-
+//animation variables for the dino
+let currentAnimation = [0, 4]  //array of numbers to use for our frame index in the draw function to set which animation to use - 0 is for standing animation and 4 is for walking animation
+let animationFrames = [4, 9]  //array of number to assign the number of animation frames to the draw function - 4 is for stnding and 9 is for running
 //function to add background music 
 function sound(src) {
     this.sound = document.createElement("audio");
@@ -42,9 +44,9 @@ let dino = new gameSprite(dinoSpriteSheet,
                             0,   //yvelocity
                             25, //width 
                             25,  //height
-                            580, //spritesheetwidth   
-                            0, // time(ms) duration between each frame change -17.0
-                            24) // number of sprites in the spritesheet
+                            20, //spritesheetwidth   //580
+                            17, // time(ms) duration between each frame change -17.0
+                            1) // number of sprites in the spritesheet //24
 
 //uploading art assets for  meteor objects
 let meteorSpriteSheet = new Image()
@@ -174,18 +176,32 @@ function checkCollision(sprite1, sprite2) {
 
 //main game loop to detect  key events and move dino position
 const gameLoop = function(){
+   
+    //dino.spriteSheetWidth = 20
+    //dino.numberOfFrames = 1
+    
     //if player is pressing up and is  not currently jumping, allow jump
     if (controller.up && dino.jumping == false){
         dino.yVelocity -=20
         dino.jumping = true
+        //set idle animation  - need to dyanimcally set spritesheet width too '118 maybe>'
+        dino.spriteSheetWidth = 20
+        dino.numberOfFrames = 1
+        console.log(dino.spriteSheetWidth)
+        
     }
     //if plaer is pressing left key, move left
     if (controller.left){
         dino.xVelocity -= 0.5
+        
     }
     //if player is pressing right key, move right
     if (controller.right){
         dino.xVelocity += 0.5
+        if (dino.xVelocity > 0){
+            dino.spriteSheetWidth = 580
+            dino.numberOfFrames = 24
+        } 
     }
 
     //adding gravity effect so character always falls back down
@@ -197,6 +213,10 @@ const gameLoop = function(){
     //adding values to x and y to add acceleration
     dino.x += dino.xVelocity
     dino.y += dino.yVelocity
+    if (dino.xVelocity < 1){
+        dino.spriteSheetWidth = 20
+        dino.numberOfFrames = 1
+    }
     //loop through the meteor array and assign the velocity values
     for( let i = 0; i < meteorArray.length; i++){
         meteorArray[i].x += meteorArray[i].xVelocity
@@ -258,9 +278,9 @@ const gameLoop = function(){
     //checking for collision in meteor array
     for (let i = 0; i < meteorArray.length; i++){
         if(checkCollision(meteorArray[i], dino)){
-            console.log('the two objects collided')
-            console.log(dino.x, dino.y)
-            console.log(dino.width, meteorArray[i].width)
+            //console.log('the two objects collided')
+            //console.log(dino.x, dino.y)
+            //console.log(dino.width, meteorArray[i].width)
             //alert('game over')
         }  
     }
@@ -281,7 +301,7 @@ const gameLoop = function(){
             score++
             
             scoreText.textContent = `Score: ${score}`
-            console.log('score is ', score)
+            //console.log('score is ', score)
         }
 
         /*if (meteorArray.length <= 1){
@@ -302,7 +322,7 @@ const gameLoop = function(){
                 //numberofMeteors++ //add on to the meteor arraay
             }
         numberofMeteors++    
-        console.log('number of meteors = ', numberofMeteors)
+        //console.log('number of meteors = ', numberofMeteors)
     }
 }
     
