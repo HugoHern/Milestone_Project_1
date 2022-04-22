@@ -13,11 +13,12 @@ https://www.bensound.com - credit for background music
 https://codepen.io/P1N2O/pen/pyBNzX - code used for animating background color
 https://www.youtube.com/watch?v=4q2vvZn5aoo&ab_channel=ChrisCourses - used tutorial for help with animation
 https://levelup.gitconnected.com/creating-a-simple-2d-game-with-html5-javascript-889aa06035ef - used tutorial for starter code
+https://www.youtube.com/watch?v=7JtLHJbm0kA&ab_channel=Frankslaboratory - used tutorial for game over screen
 
 https://mr-easy.github.io/2017-06-26-creating-spritesheet-animation-in-html5-canvas-using-javascript/ - used for help with animation
 
 https://yonatankra.com/how-to-write-a-simple-collision-detector-in-html5-canvas-and-javascript/ - used with help for collision
-https://blog.sklambert.com/html5-canvas-game-2d-collision-detection/
+https://blog.sklambert.com/html5-canvas-game-2d-collision-detection/ - used for help with collision
 
 side scroller game - maybe platforms
 there will be a timer to track how long the player lasts

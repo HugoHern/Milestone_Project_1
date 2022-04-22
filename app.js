@@ -8,10 +8,9 @@ context.canvas.width = 1104
 let gravity = 1.5  // global gravity variable for all game objects
 let score = 0 // variable to keep track of score
 let scoreText = document.getElementById('score') //accessing the DOM to display score
-scoreText.textContent = "Score:     "
-//animation variables for the dino
-let currentAnimation = [0, 4]  //array of numbers to use for our frame index in the draw function to set which animation to use - 0 is for standing animation and 4 is for walking animation
-let animationFrames = [4, 9]  //array of number to assign the number of animation frames to the draw function - 4 is for stnding and 9 is for running
+scoreText.textContent = "Score: 0     "
+//variable to control game over state
+let gameOver = false
 //function to add background music 
 function sound(src) {
     this.sound = document.createElement("audio");
@@ -27,7 +26,18 @@ function sound(src) {
       this.sound.pause();
     }
 }
+//function used to display text on the canvas
+function displayText(context){
+    context.font = '50px Helvetica'
+    if (gameOver){
+        context.textAlign = 'center'
+        context.fillStyle = 'black'
+        context.fillText('GAME OVER! RELOAD PAGE TO TRY AGAIN!', 1104/2, 200)
+        context.fillStyle = 'white'
+        context.fillText('GAME OVER! RELOAD PAGE TO TRY AGAIN!', 1104/2 + 2, 202)  // this second filltext will create a shadow effect
+    }
 
+}
 
 //uploading background for the game
 let backgroundImage = new Image()
@@ -53,13 +63,13 @@ let dino = new gameSprite(dinoSpriteSheet,
 //uploading art assets for  meteor objects
 let meteorSpriteSheet = new Image()
 meteorSpriteSheet.src = "/assets/meteors_3.png"
-//array to keep track of meteors
+//array to keep track of starting number of meteors
 let meteorArray = []     
 let numberofMeteors = 5
 for ( i = 0; i < numberofMeteors; i++){
     meteor = new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8)
     meteor.id = "meteor" + i // assigning a specific id to each meteor object
-    meteor.x = Math.random() * 1220 // assign a random X position inside the game's width
+    meteor.x = Math.random() * 1104 // assign a random X position inside the game's width
     meteorArray.push(meteor)  //adding current meteor object to the meteor array
 }
 
@@ -165,7 +175,7 @@ function checkCollision(sprite1, sprite2) {
 
     let spr1 = sprite1
     let spr2 = sprite2
-
+    //compare the positions of the x and y coordinates of two objects while also taking into account the object's dimensions to see if they intersect on the canvs
     if (spr1.x < spr2.x + spr2.width  && spr1.x + spr1.width  > spr2.x &&
 		spr1.y < spr2.y + spr2.height && spr1.y + spr1.height > spr2.y) {
 
@@ -178,19 +188,15 @@ function checkCollision(sprite1, sprite2) {
 
 //main game loop to detect  key events and move dino position
 const gameLoop = function(){
-   
-    //dino.spriteSheetWidth = 20
-    //dino.numberOfFrames = 1
-    
     //if player is pressing up and is  not currently jumping, allow jump
     if (controller.up && dino.jumping == false){
         dino.yVelocity -=20
         dino.jumping = true
-        //set idle animation  - need to dyanimcally set spritesheet width too '118 maybe>'
+        //set idle animation in the sprite sheet
         dino.spriteSheetWidth = 20
         dino.numberOfFrames = 1
     }
-    //if plaer is pressing left key, move left
+    //if player is pressing left key, move left
     if (controller.left){
         dino.xVelocity -= 0.5
         //flip the sprite sheet image horizontally to make the sprite face left
@@ -205,16 +211,18 @@ const gameLoop = function(){
     if (controller.right){
         dino.xVelocity += 0.5
         if (dino.xVelocity > 0){
+            //changing values to move the running position of the sprite sheet
             dino.spritesheet = dinoSpriteSheet
-            dino.spriteSheetWidth = 358  //356 - 580
-            dino.numberOfFrames = 15  //14 - 24
+            dino.spriteSheetWidth = 358  
+            dino.numberOfFrames = 15  
         } 
     }
 
     //adding gravity effect so character always falls back down
-    dino.yVelocity += 1.5 // gravity
+    dino.yVelocity += 1.5 
+    //adding gravity effect to each meteor object
     for( let i = 0; i < meteorArray.length; i++){
-        meteorArray[i].yVelocity += .02  //gravity
+        meteorArray[i].yVelocity += .02  * Math.floor(Math.random() * 6)//math.random functions multiplies the yVelocity to a random number
     }
     
     //adding values to x and y to add acceleration
@@ -227,7 +235,8 @@ const gameLoop = function(){
     //loop through the meteor array and assign the velocity values
     for( let i = 0; i < meteorArray.length; i++){
         meteorArray[i].x += meteorArray[i].xVelocity
-        meteorArray[i].y += meteorArray[i].yVelocity
+        meteorArray[i].y += meteorArray[i].yVelocity 
+        console.log(meteorArray[i].yVelocity)
     }
     //multiplying velocity properties to slow the character down
     dino.xVelocity *= 0.9 // friction
@@ -282,9 +291,10 @@ const gameLoop = function(){
     for (let i = 0; i < meteorArray.length; i++){
         meteorArray[i].update()
     }
-    //checking for collision in meteor array
+    //checking for collision in meteor array - if there is a colliision the game is over
     for (let i = 0; i < meteorArray.length; i++){
         if(checkCollision(meteorArray[i], dino)){
+            gameOver = true
             //console.log('the two objects collided')
             //console.log(dino.x, dino.y)
             //console.log(dino.width, meteorArray[i].width)
@@ -305,7 +315,7 @@ const gameLoop = function(){
 
         if(meteorArray[i].yVelocity === 0){
             meteorArray.splice([i], 1) // if the meteor's yVelocity is 0 then the object has hit the ground and will be removed from game
-            score++
+            score++  //everytime a meteor hits th ground the player gains a point
             
             scoreText.textContent = `Score: ${score}`
             //console.log('score is ', score)
@@ -332,10 +342,13 @@ const gameLoop = function(){
         //console.log('number of meteors = ', numberofMeteors)
     }
 }
-    
+
+    displayText(context)
    
     // call update when the browser is ready to draw again, creates an infinite loop
-    window.requestAnimationFrame(gameLoop)
+   if (!gameOver){ 
+       window.requestAnimationFrame(gameLoop)
+   }
 
 }
 
@@ -347,9 +360,3 @@ window.addEventListener("keydown", controller.keyListener)
 window.addEventListener("keyup", controller.keyListener)
 window.requestAnimationFrame(gameLoop)
 
-/*if(checkCollision(dino.x, dino.y, meteorArray[i].x, meteorArray[i].y)){
-    console.log('the two objects collided')
-    console.log(dino.x, meteorArray[i].x)
-}  
-else(console.log('no collision'))
-console.log(dino.x, meteorArray[i].x)*/
