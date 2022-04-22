@@ -28,12 +28,14 @@ function sound(src) {
     }
 }
 
+
 //uploading background for the game
 let backgroundImage = new Image()
 backgroundImage.src = "/assets/battleback7.png"
 let backgroundScreen = new gameSprite(backgroundImage, 0, 0, false, 0, 0 , 1104, 400, 1220, 0, 0)
-console.log("background loaded")
 //uploading art assets for the main character
+let leftDinoSpriteSheet = new Image()
+leftDinoSpriteSheet.src = "/assets/leftdino.png"
 let dinoSpriteSheet = new Image()
 dinoSpriteSheet.src = "/assets/blue-dino.png"
 let dino = new gameSprite(dinoSpriteSheet, 
@@ -187,20 +189,25 @@ const gameLoop = function(){
         //set idle animation  - need to dyanimcally set spritesheet width too '118 maybe>'
         dino.spriteSheetWidth = 20
         dino.numberOfFrames = 1
-        console.log(dino.spriteSheetWidth)
-        
     }
     //if plaer is pressing left key, move left
     if (controller.left){
         dino.xVelocity -= 0.5
+        //flip the sprite sheet image horizontally to make the sprite face left
+        if (dino.xVelocity < -1){
+        dino.spritesheet = leftDinoSpriteSheet
+        dino.spriteSheetWidth = 166
+        dino.numberOfFrames = 7
+        }
         
     }
     //if player is pressing right key, move right
     if (controller.right){
         dino.xVelocity += 0.5
         if (dino.xVelocity > 0){
-            dino.spriteSheetWidth = 580
-            dino.numberOfFrames = 24
+            dino.spritesheet = dinoSpriteSheet
+            dino.spriteSheetWidth = 358  //356 - 580
+            dino.numberOfFrames = 15  //14 - 24
         } 
     }
 
@@ -213,7 +220,7 @@ const gameLoop = function(){
     //adding values to x and y to add acceleration
     dino.x += dino.xVelocity
     dino.y += dino.yVelocity
-    if (dino.xVelocity < 1){
+    if (dino.xVelocity < 1 && dino.xVelocity > -1){
         dino.spriteSheetWidth = 20
         dino.numberOfFrames = 1
     }
