@@ -11,6 +11,10 @@ let scoreText = document.getElementById('score') //accessing the DOM to display 
 scoreText.textContent = "Score: 0     "
 //variable to control game over state
 let gameOver = false
+//adding sound assets to game
+let sadSong = new sound('/assets/bensound-sadday.mp3')
+let explosionSound = new sound('/assets/explosion.mp3')
+console.log(explosionSound)
 //function to add background music 
 function sound(src) {
     this.sound = document.createElement("audio");
@@ -236,7 +240,6 @@ const gameLoop = function(){
     for( let i = 0; i < meteorArray.length; i++){
         meteorArray[i].x += meteorArray[i].xVelocity
         meteorArray[i].y += meteorArray[i].yVelocity 
-        console.log(meteorArray[i].yVelocity)
     }
     //multiplying velocity properties to slow the character down
     dino.xVelocity *= 0.9 // friction
@@ -255,6 +258,7 @@ const gameLoop = function(){
         meteorArray[i].jumping = false
         meteorArray[i].y = 386 - 16 - 32
         meteorArray[i].yVelocity = 0
+        explosionSound.play()
     }
 }
     //if dino object goes past the left side of the screen, reset character to right side
@@ -285,6 +289,7 @@ const gameLoop = function(){
     context.stroke()*/
 
     //drawing the main character / game objects
+    sadSong.play()
     backgroundScreen.update()
     dino.update()  //updating positin of the player
     //updating meteor array
@@ -295,6 +300,7 @@ const gameLoop = function(){
     for (let i = 0; i < meteorArray.length; i++){
         if(checkCollision(meteorArray[i], dino)){
             gameOver = true
+            sadSong.stop()
             //console.log('the two objects collided')
             //console.log(dino.x, dino.y)
             //console.log(dino.width, meteorArray[i].width)
@@ -309,7 +315,10 @@ const gameLoop = function(){
     //loop through the meteor array and add or remove meteor objects to draw to canvas
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length > 1){
+            //explosionSound.play()
+            //console.log('boom!')
             meteorArray[i].draw(context)
+            //explosionSound.play()
             }
             
 
@@ -320,15 +329,8 @@ const gameLoop = function(){
             scoreText.textContent = `Score: ${score}`
             //console.log('score is ', score)
         }
-
-        /*if (meteorArray.length <= 1){
-            meteorArray.push(new gameSprite(meteorSpriteSheet, 0, 0, false, 0, 0, 80, 52, 800, 1, 8))
-            numberofMeteors++  //add or multiple to the number of meteors
-            console.log('number of meteors = ', numberofMeteors)
-        }*/
-        
     }
-
+    //at the end of each loop, reset the array and add to it
     for ( let i = 0; i < meteorArray.length; i++){
         if (meteorArray.length <= 1){
             for ( i = 0; i < numberofMeteors; i++){
@@ -342,7 +344,7 @@ const gameLoop = function(){
         //console.log('number of meteors = ', numberofMeteors)
     }
 }
-
+    //call the display text function if the game is over
     displayText(context)
    
     // call update when the browser is ready to draw again, creates an infinite loop
@@ -352,9 +354,8 @@ const gameLoop = function(){
 
 }
 
-let sadSong = new sound('/assets/bensound-sadday.mp3')
-//sadSong.play()
-//console.log(sadSong)
+
+//
 //adding event listeners to check for key states and running the controller function
 window.addEventListener("keydown", controller.keyListener)
 window.addEventListener("keyup", controller.keyListener)
